@@ -1,15 +1,16 @@
 package com.connorstack.rankit;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -18,11 +19,28 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+        final ListView optionListView = (ListView) findViewById(R.id.optionListView);
+
+        final ArrayList<String> optionList = new ArrayList<String>();
+
+        final ArrayAdapter<String> optionListAdapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, optionList);
+
+        optionListView.setAdapter(optionListAdapter);
+
+        final EditText optionEditText = (EditText) findViewById(R.id.optionEditText);
+        final Button addOptionButton = (Button) findViewById(R.id.addOptionButton);
+        addOptionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String newOption = optionEditText.getText().toString();
+                if (!newOption.isEmpty()) {
+                    optionEditText.getText().clear();
+                    optionList.add(0, newOption);
+                    optionListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 
@@ -44,22 +62,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
     }
 
 }
