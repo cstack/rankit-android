@@ -1,7 +1,9 @@
 package com.connorstack.rankit;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,15 +11,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
-
+/**
+ * Created by connorstack on 12/29/13.
+ */
+public abstract class PickActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final TextView promptTextView = (TextView) findViewById(R.id.promptTextView);
+        promptTextView.setText(getPrompt());
 
         final ListView optionListView = (ListView) findViewById(R.id.optionListView);
 
@@ -41,12 +49,21 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+
+        final Button continueButton = (Button) findViewById(R.id.continueButton);
+        continueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent intent = new Intent(PickActivity.this, getNextActivity());
+                startActivity(intent);
+            }
+        });
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -64,4 +81,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    protected abstract Class getNextActivity();
+
+    protected abstract String getPrompt();
 }
