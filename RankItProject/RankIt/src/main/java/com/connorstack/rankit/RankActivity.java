@@ -5,28 +5,83 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RankActivity extends ActionBarActivity {
 
-    ArrayList<String> mOptions;
-    ArrayList<String> mFactors;
+    Map<String, Map<String, Double>> mScores;
+    private Button mOption1Button;
+    private Button mOption2Button;
+    private TextView mFactorTextView;
+    private QuestionGenerator mQuestionGenerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rank);
 
+        mOption1Button = (Button) findViewById(R.id.option1button);
+        mOption2Button = (Button) findViewById(R.id.option2button);
+        mFactorTextView = (TextView) findViewById(R.id.factorTextView);
+
         final Intent intent = getIntent();
         final Bundle progress = intent.getBundleExtra(PickActivity.EXTRA_PROGRESS);
-        mOptions = progress.getStringArrayList(PickActivity.EXTRA_OPTIONS);
-        mFactors = progress.getStringArrayList(PickActivity.EXTRA_FACTORS);
+        final ArrayList<String> options = progress.getStringArrayList(PickActivity.EXTRA_OPTIONS);
+        final ArrayList<String> factors = progress.getStringArrayList(PickActivity.EXTRA_FACTORS);
 
-        final TextView textView = (TextView) findViewById(R.id.textView);
-        textView.setText("Options: " + mOptions.toString() + "\nFactors: " + mFactors.toString());
+        mScores = new HashMap<String, Map<String, Double>>();
+        for (String option : options) {
+            final Map<String, Double> scoreMap = new HashMap<String, Double>();
+            for (String factor : factors) {
+                scoreMap.put(factor, 100.0);
+            }
+            mScores.put(option, scoreMap);
+        }
 
+        mOption1Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onQuestionAnswered(true);
+            }
+        });
+        mOption2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onQuestionAnswered(false);
+            }
+        });
+
+        mQuestionGenerator = new QuestionGenerator(options, factors);
+        displayQuestion(mQuestionGenerator.getNext());
+    }
+
+    private void onQuestionAnswered(boolean pickedFirst) {
+        // Update scores
+        final Question question = mQuestionGenerator.getCurrent();
+        final String factor = question.mFactor;
+        final String winner = pickedFirst ? question.mOption1 : question.mOption2;
+        final String loser = pickedFirst ? question.mOption2 : question.mOption1;
+        final Map<String, Double> winnerScores = mScores.get(winner);
+        final Map<String, Double> loserScores = mScores.get(loser);
+        final Double winnings = loserScores.get(factor);
+        winnerScores.put(factor, winnerScores.get(factor)+winnings);
+        loserScores.put(factor, loserScores.get(factor)-winnings);
+
+        // Move to next question
+        displayQuestion(mQuestionGenerator.getNext());
+    }
+
+    private void displayQuestion(Question question) {
+        mOption1Button.setText(question.mOption1);
+        mOption2Button.setText(question.mOption2);
+        mFactorTextView.setText(question.mFactor);
     }
 
 
@@ -50,6 +105,37 @@ public class RankActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class Question {
+        String mOption1;
+        String mOption2;
+        String mFactor;
 
+        public Question(String option1, String option2, String factor) {
+            mOption1 = option1;
+            mOption2 = option2;
+            mFactor = factor;
+        }
+    }
 
+    private class QuestionGenerator {
+        private ArrayList<String> mOptions;
+        private ArrayList<String> mFactors;
+        private Question mCurrent;
+
+        public QuestionGenerator(ArrayList<String> options, ArrayList<String> factors) {
+            mOptions = options;
+            mFactors = factors;
+        }
+
+        public Question getNext() {
+            Collections.shuffle(mOptions);
+            Collections.shuffle(mFactors);
+            mCurrent = new Question(mOptions.get(0), mOptions.get(1), mFactors.get(0));
+            return mCurrent;
+        }
+
+        public Question getCurrent() {
+            return mCurrent;
+        }
+    }
 }
