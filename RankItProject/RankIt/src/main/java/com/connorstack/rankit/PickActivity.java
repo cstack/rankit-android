@@ -1,6 +1,5 @@
 package com.connorstack.rankit;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -19,20 +18,34 @@ import java.util.ArrayList;
  * Created by connorstack on 12/29/13.
  */
 public abstract class PickActivity extends ActionBarActivity {
+    protected static final String EXTRA_OPTIONS = "options";
+    protected static final String EXTRA_FACTORS = "factors";
+    public static final String EXTRA_PROGRESS = "progress";
+
+    protected ArrayList<String> mList;
+    private Bundle mProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_PROGRESS)) {
+            mProgress = intent.getBundleExtra(EXTRA_PROGRESS);
+        } else {
+            mProgress = new Bundle();
+        }
 
         final TextView promptTextView = (TextView) findViewById(R.id.promptTextView);
         promptTextView.setText(getPrompt());
 
         final ListView optionListView = (ListView) findViewById(R.id.optionListView);
 
-        final ArrayList<String> optionList = new ArrayList<String>();
+        mList = new ArrayList<String>();
 
         final ArrayAdapter<String> optionListAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, optionList);
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mList);
 
         optionListView.setAdapter(optionListAdapter);
 
@@ -44,7 +57,7 @@ public abstract class PickActivity extends ActionBarActivity {
                 final String newOption = optionEditText.getText().toString();
                 if (!newOption.isEmpty()) {
                     optionEditText.getText().clear();
-                    optionList.add(0, newOption);
+                    mList.add(0, newOption);
                     optionListAdapter.notifyDataSetChanged();
                 }
             }
@@ -55,11 +68,14 @@ public abstract class PickActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 final Intent intent = new Intent(PickActivity.this, getNextActivity());
+                saveProgress(mProgress);
+                intent.putExtra(EXTRA_PROGRESS, mProgress);
                 startActivity(intent);
             }
         });
     }
 
+    protected abstract void saveProgress(Bundle progress);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

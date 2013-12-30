@@ -1,26 +1,32 @@
 package com.connorstack.rankit;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class RankActivity extends ActionBarActivity {
+
+    ArrayList<String> mOptions;
+    ArrayList<String> mFactors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rank);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+        final Intent intent = getIntent();
+        final Bundle progress = intent.getBundleExtra(PickActivity.EXTRA_PROGRESS);
+        mOptions = progress.getStringArrayList(PickActivity.EXTRA_OPTIONS);
+        mFactors = progress.getStringArrayList(PickActivity.EXTRA_FACTORS);
+
+        final TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText("Options: " + mOptions.toString() + "\nFactors: " + mFactors.toString());
+
     }
 
 
@@ -44,20 +50,6 @@ public class RankActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_rank, container, false);
-            return rootView;
-        }
-    }
 
 }
