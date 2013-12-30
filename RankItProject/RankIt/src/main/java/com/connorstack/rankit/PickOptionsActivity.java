@@ -3,6 +3,11 @@ package com.connorstack.rankit;
 public class PickOptionsActivity extends PickActivity {
 
     @Override
+    protected int getMinimumNumberOfItems() {
+        return 2;
+    }
+
+    @Override
     protected void saveProgress() {
         Ranking.getInstance().setOptions(mList);
     }

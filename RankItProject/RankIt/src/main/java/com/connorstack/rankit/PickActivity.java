@@ -50,6 +50,7 @@ public abstract class PickActivity extends ActionBarActivity {
                     optionEditText.getText().clear();
                     mList.add(0, newOption);
                     optionListAdapter.notifyDataSetChanged();
+                    updateContinueButton(continueButton);
                 }
             }
         });
@@ -62,7 +63,24 @@ public abstract class PickActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        updateContinueButton(continueButton);
     }
+
+    private void updateContinueButton(Button continueButton) {
+        final int numNeeded = getMinimumNumberOfItems();
+        if (mList.size() >= numNeeded) {
+            continueButton.setClickable(true);
+            continueButton.setText("Continue");
+        } else {
+            continueButton.setClickable(false);
+            final String formatString =
+                    numNeeded == 1 ? "Add at least %d item" : "Add at least %d items";
+            continueButton.setText(String.format(formatString, numNeeded));
+        }
+    }
+
+    protected abstract int getMinimumNumberOfItems();
 
     protected abstract void saveProgress();
 

@@ -6,6 +6,11 @@ package com.connorstack.rankit;
 public class PickFactorsActivity extends PickActivity {
 
     @Override
+    protected int getMinimumNumberOfItems() {
+        return 1;
+    }
+
+    @Override
     protected void saveProgress() {
         Ranking.getInstance().setFactors(mList);
     }
