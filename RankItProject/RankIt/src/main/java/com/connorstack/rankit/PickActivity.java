@@ -18,24 +18,13 @@ import java.util.ArrayList;
  * Created by connorstack on 12/29/13.
  */
 public abstract class PickActivity extends ActionBarActivity {
-    protected static final String EXTRA_OPTIONS = "options";
-    protected static final String EXTRA_FACTORS = "factors";
-    public static final String EXTRA_PROGRESS = "progress";
 
     protected ArrayList<String> mList;
-    private Bundle mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_PROGRESS)) {
-            mProgress = intent.getBundleExtra(EXTRA_PROGRESS);
-        } else {
-            mProgress = new Bundle();
-        }
 
         final TextView promptTextView = (TextView) findViewById(R.id.promptTextView);
         promptTextView.setText(getPrompt());
@@ -51,6 +40,8 @@ public abstract class PickActivity extends ActionBarActivity {
 
         final EditText optionEditText = (EditText) findViewById(R.id.optionEditText);
         final Button addOptionButton = (Button) findViewById(R.id.addOptionButton);
+        final Button continueButton = (Button) findViewById(R.id.continueButton);
+
         addOptionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,19 +54,17 @@ public abstract class PickActivity extends ActionBarActivity {
             }
         });
 
-        final Button continueButton = (Button) findViewById(R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                saveProgress();
                 final Intent intent = new Intent(PickActivity.this, getNextActivity());
-                saveProgress(mProgress);
-                intent.putExtra(EXTRA_PROGRESS, mProgress);
                 startActivity(intent);
             }
         });
     }
 
-    protected abstract void saveProgress(Bundle progress);
+    protected abstract void saveProgress();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

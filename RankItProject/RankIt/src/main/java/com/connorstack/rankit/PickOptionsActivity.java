@@ -1,12 +1,10 @@
 package com.connorstack.rankit;
 
-import android.os.Bundle;
-
 public class PickOptionsActivity extends PickActivity {
 
     @Override
-    protected void saveProgress(Bundle progress) {
-        progress.putStringArrayList(EXTRA_OPTIONS, mList);
+    protected void saveProgress() {
+        Ranking.getInstance().setOptions(mList);
     }
 
     @Override

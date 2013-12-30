@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RankActivity extends ActionBarActivity {
 
+    private static final Double STEAL_PERCENTAGE = 0.2;
     Map<String, Map<String, Double>> mScores;
     private Button mOption1Button;
     private Button mOption2Button;
@@ -31,15 +32,10 @@ public class RankActivity extends ActionBarActivity {
         mOption2Button = (Button) findViewById(R.id.option2button);
         mFactorTextView = (TextView) findViewById(R.id.factorTextView);
 
-        final Intent intent = getIntent();
-        final Bundle progress = intent.getBundleExtra(PickActivity.EXTRA_PROGRESS);
-        final ArrayList<String> options = progress.getStringArrayList(PickActivity.EXTRA_OPTIONS);
-        final ArrayList<String> factors = progress.getStringArrayList(PickActivity.EXTRA_FACTORS);
-
         mScores = new HashMap<String, Map<String, Double>>();
-        for (String option : options) {
+        for (String option : Ranking.getInstance().getOptions()) {
             final Map<String, Double> scoreMap = new HashMap<String, Double>();
-            for (String factor : factors) {
+            for (String factor : Ranking.getInstance().getFactors()) {
                 scoreMap.put(factor, 100.0);
             }
             mScores.put(option, scoreMap);
@@ -58,7 +54,17 @@ public class RankActivity extends ActionBarActivity {
             }
         });
 
-        mQuestionGenerator = new QuestionGenerator(options, factors);
+        findViewById(R.id.resultsButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Ranking.getInstance().setScores(mScores);
+                final Intent intent = new Intent(RankActivity.this, ResultsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mQuestionGenerator =
+                new QuestionGenerator(Ranking.getInstance().getOptions(), Ranking.getInstance().getFactors());
         displayQuestion(mQuestionGenerator.getNext());
     }
 
@@ -70,7 +76,7 @@ public class RankActivity extends ActionBarActivity {
         final String loser = pickedFirst ? question.mOption2 : question.mOption1;
         final Map<String, Double> winnerScores = mScores.get(winner);
         final Map<String, Double> loserScores = mScores.get(loser);
-        final Double winnings = loserScores.get(factor);
+        final Double winnings = loserScores.get(factor) * STEAL_PERCENTAGE;
         winnerScores.put(factor, winnerScores.get(factor)+winnings);
         loserScores.put(factor, loserScores.get(factor)-winnings);
 
