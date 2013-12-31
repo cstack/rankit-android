@@ -82,6 +82,11 @@ public class RankActivity extends MenuActivity {
     }
 
     private void displayQuestion(Question question) {
+        if (question == null) {
+            findViewById(R.id.questionInterface).setVisibility(View.INVISIBLE);
+            findViewById(R.id.doneTextView).setVisibility(View.VISIBLE);
+            return;
+        }
         mOption1Button.setText(question.mOption1);
         mOption2Button.setText(question.mOption2);
         mFactorTextView.setText(question.mFactor);
@@ -100,19 +105,31 @@ public class RankActivity extends MenuActivity {
     }
 
     private class QuestionGenerator {
-        private ArrayList<String> mOptions;
-        private ArrayList<String> mFactors;
+        private final ArrayList<Question> mQuestions;
         private Question mCurrent;
 
         public QuestionGenerator(ArrayList<String> options, ArrayList<String> factors) {
-            mOptions = options;
-            mFactors = factors;
+            // Randomize order of questions
+            final int numOptions = options.size();
+            final int numFactors = factors.size();
+            mQuestions = new ArrayList<Question>();
+            for (int i = 0; i < numOptions; i++) {
+                for (int j = i+1; j < numOptions; j++) {
+                    for (int k = 0; k < numFactors; k++) {
+                        mQuestions.add(new Question(options.get(i), options.get(j), factors.get(k)));
+                    }
+                }
+            }
+            Collections.shuffle(mQuestions);
         }
 
         public Question getNext() {
-            Collections.shuffle(mOptions);
-            Collections.shuffle(mFactors);
-            mCurrent = new Question(mOptions.get(0), mOptions.get(1), mFactors.get(0));
+            if (mQuestions.size() == 0) {
+                mCurrent = null;
+            } else {
+                mCurrent = mQuestions.get(0);
+                mQuestions.remove(mCurrent);
+            }
             return mCurrent;
         }
 
