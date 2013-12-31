@@ -1,9 +1,6 @@
 package com.connorstack.rankit;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -13,7 +10,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ResultsActivity extends ActionBarActivity {
+public class ResultsActivity extends MenuActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,27 +40,6 @@ public class ResultsActivity extends ActionBarActivity {
         final ListView runnersUpListView = (ListView) findViewById(R.id.runnersUpListView);
         runnersUpListView.setAdapter(runnersUpAdapter);
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.results, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private class ValueComparator implements Comparator<String> {
