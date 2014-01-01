@@ -19,6 +19,6 @@ public class PickOptionsActivity extends PickActivity {
 
     @Override
     protected String getPrompt() {
-        return "What do you want to decide between?";
+        return "What do you want to\ndecide between?";
     }
 }

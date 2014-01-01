@@ -8,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.graphics.Typeface;
+import android.animation.ObjectAnimator;
+import android.animation.ArgbEvaluator;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -39,6 +43,11 @@ public abstract class PickActivity extends MenuActivity {
         final Button addOptionButton = (Button) findViewById(R.id.addOptionButton);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
 
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/BebasNeue.otf");
+        addOptionButton.setTypeface(tf);
+        continueButton.setTypeface(tf);
+        promptTextView.setTypeface(tf);
+
         addOptionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +75,19 @@ public abstract class PickActivity extends MenuActivity {
 
     private void updateContinueButton(Button continueButton) {
         final int numNeeded = getMinimumNumberOfItems();
+
+        final View continueButtonBorder = (View) findViewById(R.id.ContinueButtonBorder);
+
         if (mList.size() >= numNeeded) {
+            ObjectAnimator colorFade = ObjectAnimator.ofObject(continueButton, "backgroundColor", new ArgbEvaluator(), Color.rgb(211, 211, 211), Color.rgb(88, 198, 42));
+            colorFade.setDuration(500);
+            colorFade.start();
+            ObjectAnimator borderFade = ObjectAnimator.ofObject(continueButtonBorder, "backgroundColor", new ArgbEvaluator(), Color.rgb(255, 255, 255), Color.rgb(27, 165, 19));
+            borderFade.setDuration(500);
+            borderFade.start();
+            ObjectAnimator textFade = ObjectAnimator.ofObject(continueButton, "textColor", new ArgbEvaluator(), Color.rgb(0, 0, 0), Color.rgb(255, 255, 255));
+            textFade.setDuration(500);
+            textFade.start();
             continueButton.setClickable(true);
             continueButton.setText("Continue");
         } else {
