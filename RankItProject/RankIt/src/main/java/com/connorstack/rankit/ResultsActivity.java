@@ -1,9 +1,15 @@
 package com.connorstack.rankit;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,17 +28,30 @@ public class ResultsActivity extends MenuActivity {
         final Map<String,Double> sortedScores = new TreeMap<String,Double>(comparator);
         sortedScores.putAll(finalScores);
 
+
+        /* Design stuff */
+        final TextView headerTextView = (TextView) findViewById(R.id.textView);
+        final TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
+        final TextView textView3 = (TextView) findViewById(R.id.textView3);
+        final Button newRankingButton = (Button) findViewById(R.id.newRankingButton);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/BebasNeue.otf");
+        headerTextView.setTypeface(tf);
+        winnerTextView.setTypeface(tf);
+        textView3.setTypeface(tf);
+        newRankingButton.setTypeface(tf);
+
+
         String winner = null;
         ArrayList<String> runnersUp = new ArrayList<String>();
         for (Map.Entry<String, Double> entry : sortedScores.entrySet()) {
             if (winner == null) {
-                winner = entry.getKey() + " ("+Double.toString(entry.getValue())+")";
+                winner = entry.getKey(); //+ " ("+Double.toString(entry.getValue())+")";
             } else {
-                runnersUp.add(entry.getKey()+" ("+Double.toString(entry.getValue())+")");
+                runnersUp.add(entry.getKey()); //+" ("+Double.toString(entry.getValue())+")");
             }
         }
 
-        final TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
         winnerTextView.setText(winner);
 
         final ArrayAdapter<String> runnersUpAdapter =
@@ -40,6 +59,15 @@ public class ResultsActivity extends MenuActivity {
         final ListView runnersUpListView = (ListView) findViewById(R.id.runnersUpListView);
         runnersUpListView.setAdapter(runnersUpAdapter);
 
+        findViewById(R.id.newRankingButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent intent = new Intent(ResultsActivity.this, PickOptionsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
     }
 
     private class ValueComparator implements Comparator<String> {

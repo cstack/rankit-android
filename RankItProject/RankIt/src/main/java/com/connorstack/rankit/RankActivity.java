@@ -1,6 +1,7 @@
 package com.connorstack.rankit;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,9 +26,21 @@ public class RankActivity extends MenuActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rank);
 
+
+        /* Design stuff */
         mOption1Button = (Button) findViewById(R.id.option1button);
         mOption2Button = (Button) findViewById(R.id.option2button);
         mFactorTextView = (TextView) findViewById(R.id.factorTextView);
+        final TextView viewResults = (TextView) findViewById(R.id.resultsButton);
+        final TextView promptTextView = (TextView) findViewById(R.id.promptTextView);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/BebasNeue.otf");
+        mOption1Button.setTypeface(tf);
+        mOption2Button.setTypeface(tf);
+        mFactorTextView.setTypeface(tf);
+        viewResults.setTypeface(tf);
+        promptTextView.setTypeface(tf);
+
 
         mScores = new HashMap<String, Map<String, Double>>();
         for (String option : Ranking.getInstance().getOptions()) {
@@ -83,8 +96,9 @@ public class RankActivity extends MenuActivity {
 
     private void displayQuestion(Question question) {
         if (question == null) {
-            findViewById(R.id.questionInterface).setVisibility(View.INVISIBLE);
-            findViewById(R.id.doneTextView).setVisibility(View.VISIBLE);
+            Ranking.getInstance().setScores(mScores);
+            final Intent intent = new Intent(RankActivity.this, ResultsActivity.class);
+            startActivity(intent);
             return;
         }
         mOption1Button.setText(question.mOption1);
